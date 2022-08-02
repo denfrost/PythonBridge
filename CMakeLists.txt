@@ -31,3 +31,9 @@ endif(WIN32)
 target_link_libraries(QtPythonBridge PRIVATE Qt${QT_VERSION_MAJOR}::Core)
 
 target_compile_definitions(QtPythonBridge PRIVATE QTPYTHONBRIDGE_LIBRARY)
+
+
+message("Coping dll to Unreal binaries")
+add_custom_command(TARGET QtPythonBridge POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/QtPythonBridge.dll ${CMAKE_CURRENT_SOURCE_DIR}/../../../Binaries/ThirdParty/PythonLibrary/Win64
+        )
