@@ -1,39 +1,35 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.23)
+project(PythonBridge)
 
-project(QtPythonBridge LANGUAGES CXX)
-
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/output CACHE PATH ${CMAKE_CURRENT_BINARY_DIR} FORCE)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
-
-add_library(QtPythonBridge SHARED
-  QtPythonBridge_global.h
-  qtpythonbridge.cpp
-  qtpythonbridge.h
-)
+add_library(PythonBridge SHARED library.cpp)
 
 if(WIN32)
-    target_include_directories(QtPythonBridge PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/Win64/Python/Include)
-    target_link_libraries(QtPythonBridge PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/Win64/Python/libs/python39_d.lib
-            ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/Win64/Python/libs/python39.lib
-            ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/Win64/Python/libs/python3.lib
-            ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/Win64/Python/libs/_tkinter.lib
-    )
-endif(WIN32)
+    target_include_directories(PythonBridge PUBLIC ${CMAKE_SOURCE_DIR}/thirdparty/Win/Python/Include)
+    target_link_libraries(PythonBridge PRIVATE
+            ${CMAKE_SOURCE_DIR}/thirdparty/Win/Python/libs/_tkinter.lib
+            ${CMAKE_SOURCE_DIR}/thirdparty/Win/Python/libs/python3.lib
+            ${CMAKE_SOURCE_DIR}/thirdparty/Win/Python/libs/python39.lib
+            ${CMAKE_SOURCE_DIR}/thirdparty/Win/Python/libs/python39_d.lib
+            )
 
-target_link_libraries(QtPythonBridge PRIVATE Qt${QT_VERSION_MAJOR}::Core)
-
-target_compile_definitions(QtPythonBridge PRIVATE QTPYTHONBRIDGE_LIBRARY)
-
-
-message("Coping dll to Unreal binaries")
-add_custom_command(TARGET QtPythonBridge POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/QtPythonBridge.dll ${CMAKE_CURRENT_SOURCE_DIR}/../../../Binaries/ThirdParty/PythonLibrary/Win64
-        )
+    message("Coping .dll files to Unreal binaries")
+    add_custom_command(TARGET PythonBridge POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/PythonBridge.dll ${CMAKE_CURRENT_SOURCE_DIR}/../../../Binaries/ThirdParty/PythonLibrary/Win64
+            )
+elseif(UNIX)
+    target_include_directories(PythonBridge PUBLIC ${CMAKE_SOURCE_DIR}/thirdparty/Linux/Python/include)
+    #[[
+    target_link_libraries(PythonBridge PRIVATE
+            ${CMAKE_SOURCE_DIR}/thirdparty/Linux/Python/lib/x86_64-linux-gnu/libpython3.9.so
+            )
+    ]]
+    message("Coping .so files to Unreal binaries")
+    #[[
+    add_custom_command(TARGET PythonBridge POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/PythonBridge.so ${CMAKE_CURRENT_SOURCE_DIR}/../../../Binaries/ThirdParty/PythonLibrary/Win64
+            )
+            ]]
+endif()
