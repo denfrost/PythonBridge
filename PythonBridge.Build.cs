@@ -3,22 +3,22 @@
 using System.IO;
 using UnrealBuildTool;
 
-public class QtPythonBridge : ModuleRules
+public class PythonBridge : ModuleRules
 {
-	public QtPythonBridge(ReadOnlyTargetRules Target) : base(Target)
+	public PythonBridge(ReadOnlyTargetRules Target) : base(Target)
 	{
 		Type = ModuleType.External;
 
 		if (Target.Platform == UnrealTargetPlatform.Win64)
 		{
 			// Add the import library
-			PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libs", "PythonBridge.lib"));
+			PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "output", "Release", "PythonBridge.lib"));
 
 			// Delay-load the DLL, so we can load it from the right place first
-			PublicDelayLoadDLLs.Add("QtPythonBridge.dll");
+			PublicDelayLoadDLLs.Add("PythonBridge.dll");
 
 			// Ensure that the DLL is staged along with the executable
-			RuntimeDependencies.Add("$(PluginDir)/Binaries/ThirdParty/QtPythonBridge/build/Release/QtPythonBridge.dll");
+			RuntimeDependencies.Add("$(PluginDir)/Binaries/ThirdParty/PythonBridge/output/Release/PythonBridge.dll");
         }
         else if (Target.Platform == UnrealTargetPlatform.Mac)
         {
@@ -27,7 +27,7 @@ public class QtPythonBridge : ModuleRules
         }
         else if (Target.Platform == UnrealTargetPlatform.Linux)
 		{
-			string ExampleSoPath = Path.Combine("$(PluginDir)", "libs", "libPythonBridge.so");
+			string ExampleSoPath = Path.Combine("$(PluginDir)", "Source", "ThirdParty", "PythonBridge", "output", "libPythonBridge.so");
 			PublicAdditionalLibraries.Add(ExampleSoPath);
 			PublicDelayLoadDLLs.Add(ExampleSoPath);
 			RuntimeDependencies.Add(ExampleSoPath);

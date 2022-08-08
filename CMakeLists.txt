@@ -15,21 +15,32 @@ if(WIN32)
             ${CMAKE_SOURCE_DIR}/thirdparty/Win/Python/libs/python39_d.lib
             )
 
-    message("Coping .dll files to Unreal binaries")
-    add_custom_command(TARGET PythonBridge POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/PythonBridge.dll ${CMAKE_CURRENT_SOURCE_DIR}/../../../Binaries/ThirdParty/PythonLibrary/Win64
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/output/Release/PythonBridge.dll)
+        message("Coping .dll files to Unreal binaries")
+        add_custom_command(TARGET PythonBridge POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/output/Release/PythonBridge.dll ${CMAKE_CURRENT_SOURCE_DIR}/../../../Binaries/ThirdParty/UPythonLibrary/Win64/
             )
+    else()
+        message("Missing .dll files")
+    endif() 
+
 elseif(UNIX)
     target_include_directories(PythonBridge PUBLIC ${CMAKE_SOURCE_DIR}/thirdparty/Linux/Python/include)
+
     #[[
-    target_link_libraries(PythonBridge PRIVATE
+    target_link_libraries(PythonBridge
             ${CMAKE_SOURCE_DIR}/thirdparty/Linux/Python/lib/x86_64-linux-gnu/libpython3.9.so
             )
-    ]]
-    message("Coping .so files to Unreal binaries")
-    #[[
-    add_custom_command(TARGET PythonBridge POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/PythonBridge.so ${CMAKE_CURRENT_SOURCE_DIR}/../../../Binaries/ThirdParty/PythonLibrary/Win64
+     ]]
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/output/libPythonBridge.so)
+        message("Coping .so files to Unreal binaries")
+        add_custom_command(TARGET PythonBridge POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/output/libPythonBridge.so ${CMAKE_CURRENT_SOURCE_DIR}/../../../Binaries/ThirdParty/UPythonLibrary/Linux/x86_64-unknown-linux-gnu
             )
-            ]]
+    else()
+        message("Missing .so files")
+    endif()
+    
+    
+            
 endif()
