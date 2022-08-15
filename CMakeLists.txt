@@ -4,11 +4,11 @@ project(PythonBridge)
 set(CMAKE_CXX_STANDARD 17)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/output CACHE PATH ${CMAKE_CURRENT_BINARY_DIR} FORCE)
 
-add_library(PythonBridge SHARED library.cpp)
+add_library(PythonBridge SHARED STATIC library.h library.cpp)
 
 if(WIN32)
     target_include_directories(PythonBridge PUBLIC ${CMAKE_SOURCE_DIR}/thirdparty/Win/Python/Include)
-    target_link_libraries(PythonBridge PRIVATE
+    target_link_libraries(PythonBridge 
             ${CMAKE_SOURCE_DIR}/thirdparty/Win/Python/libs/_tkinter.lib
             ${CMAKE_SOURCE_DIR}/thirdparty/Win/Python/libs/python3.lib
             ${CMAKE_SOURCE_DIR}/thirdparty/Win/Python/libs/python39.lib
